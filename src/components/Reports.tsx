@@ -295,32 +295,32 @@ export function Reports() {
       </div>
 
       <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-        <TabsList className="grid grid-cols-2 md:grid-cols-7 h-auto p-1 bg-muted/50 neo-shadow no-print">
-          <TabsTrigger value="pivot" className="py-2.5">
+        <TabsList className="flex overflow-x-auto scrollbar-hide h-auto p-1 bg-muted/50 neo-shadow no-print">
+          <TabsTrigger value="pivot" className="py-2.5 px-3 whitespace-nowrap">
             <TableIcon className="h-4 w-4 mr-2" />
             {t('pivot_table')}
           </TabsTrigger>
-          <TabsTrigger value="daily" className="py-2.5">
+          <TabsTrigger value="daily" className="py-2.5 px-3 whitespace-nowrap">
             <Calendar className="h-4 w-4 mr-2" />
             {t('daily_report')}
           </TabsTrigger>
-          <TabsTrigger value="stock" className="py-2.5">
+          <TabsTrigger value="stock" className="py-2.5 px-3 whitespace-nowrap">
             <Package className="h-4 w-4 mr-2" />
             {t('stock_report')}
           </TabsTrigger>
-          <TabsTrigger value="usage" className="py-2.5">
+          <TabsTrigger value="usage" className="py-2.5 px-3 whitespace-nowrap">
             <TrendingUp className="h-4 w-4 mr-2" />
             {t('usage_analysis')}
           </TabsTrigger>
-          <TabsTrigger value="purchase" className="py-2.5">
+          <TabsTrigger value="purchase" className="py-2.5 px-3 whitespace-nowrap">
             <History className="h-4 w-4 mr-2" />
             {t('purchase_history')}
           </TabsTrigger>
-          <TabsTrigger value="audit" className="py-2.5">
+          <TabsTrigger value="audit" className="py-2.5 px-3 whitespace-nowrap">
             <Scale className="h-4 w-4 mr-2" />
             {t('audit_accounting')}
           </TabsTrigger>
-          <TabsTrigger value="invoice" className="py-2.5">
+          <TabsTrigger value="invoice" className="py-2.5 px-3 whitespace-nowrap">
             <Receipt className="h-4 w-4 mr-2" />
             {t('invoice')}
           </TabsTrigger>
@@ -336,7 +336,7 @@ export function Reports() {
               </CardTitle>
               <CardDescription>{t('drag_drop_desc')}</CardDescription>
             </CardHeader>
-            <CardContent className="p-0 overflow-x-auto">
+            <CardContent className="p-0 overflow-x-auto scrollbar-hide">
               <div className="p-4 min-w-[800px]">
                 <PivotTableUI
                   data={data.map(d => ({...d, type: d.type === 'purchase' ? t('purchase') : t('consumption'), usageType: t(d.usageType), sourceLocation: t(d.sourceLocation)}))}
@@ -362,7 +362,7 @@ export function Reports() {
                 <CardDescription>Select a date to view details</CardDescription>
               </CardHeader>
               <CardContent className="p-0">
-                <div className="max-h-[600px] overflow-y-auto">
+                <div className="max-h-[600px] overflow-y-auto scrollbar-hide">
                   <table className="w-full text-sm">
                     <thead className="bg-muted/50 text-muted-foreground font-medium sticky top-0 z-10 border-y border-border">
                       <tr>
@@ -459,7 +459,7 @@ export function Reports() {
                       </button>
                     </div>
 
-                    <div className="overflow-x-auto">
+                    <div className="overflow-x-auto scrollbar-hide">
                       <table className="w-full text-sm">
                         <thead className="bg-muted text-muted-foreground font-medium border-y border-border">
                           <tr>

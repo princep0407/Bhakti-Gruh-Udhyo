@@ -272,10 +272,10 @@ export default function App() {
       <Toaster position="top-center" />
 
       {/* Sidebar */}
-      <aside className={`fixed inset-y-0 left-0 z-50 w-72 bg-white border-r shadow-2xl transform transition-transform duration-500 ease-in-out lg:relative lg:translate-x-0 flex flex-col ${isMobileMenuOpen ? 'translate-x-0' : '-translate-x-full'}`}>
+      <aside className={`fixed inset-y-0 left-0 z-50 w-72 bg-white border-r shadow-2xl transform transition-transform duration-500 ease-in-out lg:relative lg:translate-x-0 flex flex-col no-print ${isMobileMenuOpen ? 'translate-x-0' : '-translate-x-full'}`}>
         <div className="p-8 border-b flex items-center justify-between bg-gradient-to-br from-primary/5 to-transparent">
           <div className="flex items-center gap-3">
-            <div className="p-1 overflow-hidden flex justify-center">
+            <div className="p-1 overflow-hidden flex justify-center cursor-pointer" onClick={() => isAdmin && setActiveTab('dashboard')}>
               <img src="https://i.postimg.cc/dtwCs38R/Bhakti-Logo-black.png" alt="Logo" className="h-12 w-12 object-contain" />
             </div>
           </div>
@@ -285,7 +285,7 @@ export default function App() {
         </div>
 
         <Tabs value={activeTab} onValueChange={(v) => { setActiveTab(v); setIsMobileMenuOpen(false); }} className="flex-1 flex flex-col overflow-hidden">
-          <TabsList className="flex-1 flex-col items-stretch justify-start p-4 space-y-1 bg-transparent h-auto overflow-y-auto w-full">
+          <TabsList className="flex-1 flex-col items-stretch justify-start p-4 space-y-1 bg-transparent h-auto overflow-y-auto w-full scrollbar-hide">
             {navItems.map(item => {
               if (item.adminOnly && !isAdmin) return null;
               return (
@@ -325,9 +325,9 @@ export default function App() {
       </aside>
 
       {/* Main Content */}
-      <main className="flex-1 flex flex-col h-screen overflow-hidden relative">
-        <header className="h-16 bg-white border-b flex items-center justify-between px-4 lg:hidden shrink-0">
-          <div className="flex items-center gap-2">
+      <main className="flex-1 flex flex-col min-h-screen lg:h-screen overflow-hidden relative">
+        <header className="h-16 bg-white border-b flex items-center justify-between px-4 lg:hidden shrink-0 no-print">
+          <div className="flex items-center gap-2 cursor-pointer" onClick={() => isAdmin && setActiveTab('dashboard')}>
             <img src="https://i.postimg.cc/dtwCs38R/Bhakti-Logo-black.png" alt="Logo" className="h-8 w-8 object-contain" />
           </div>
           <Button variant="ghost" size="icon" onClick={() => setIsMobileMenuOpen(true)}>
@@ -335,7 +335,7 @@ export default function App() {
           </Button>
         </header>
 
-        <div className="flex-1 overflow-auto p-4 lg:p-8 bg-slate-50/50">
+        <div className="flex-1 overflow-y-auto p-4 lg:p-8 bg-slate-50/50">
           <Tabs value={activeTab} className="h-full">
             {isAdmin && (
               <>
