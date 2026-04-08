@@ -562,7 +562,7 @@ export function Reports() {
                 </CardTitle>
               </CardHeader>
               <CardContent className="p-0">
-                <div className="overflow-x-auto">
+                <div className="overflow-x-auto scrollbar-hide">
                   <table className="w-full text-sm">
                     <thead className="bg-muted text-muted-foreground font-medium border-y border-border">
                       <tr>
@@ -644,7 +644,7 @@ export function Reports() {
                 <CardDescription>{t('expiring_in_30_days')}</CardDescription>
               </CardHeader>
               <CardContent className="p-0">
-                <div className="overflow-x-auto">
+                <div className="overflow-x-auto scrollbar-hide">
                   <table className="w-full text-sm">
                     <thead className="bg-muted text-muted-foreground font-medium border-y border-border">
                       <tr>
@@ -781,7 +781,7 @@ export function Reports() {
               </CardTitle>
             </CardHeader>
             <CardContent className="p-0">
-              <div className="overflow-x-auto">
+              <div className="overflow-x-auto scrollbar-hide">
                 <table className="w-full text-sm">
                   <thead className="bg-muted text-muted-foreground font-medium border-y border-border">
                     <tr>

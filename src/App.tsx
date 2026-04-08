@@ -220,9 +220,7 @@ export default function App() {
                 </button>
               </div>
 
-              <p className="text-center text-xs text-slate-400 bg-slate-50 rounded-lg py-2">
-                {t('admin_login_note')}
-              </p>
+              
             </form>
           </CardContent>
         </Card>
