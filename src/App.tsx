@@ -47,13 +47,31 @@ export default function App() {
           role = data.role || 'user';
           active = data.isActive ?? false;
           
+          let needsUpdate = false;
+          const updateData: any = {};
+
+          if (data.isActive === undefined) {
+            updateData.isActive = active;
+            needsUpdate = true;
+          }
+          if (!data.createdAt) {
+            updateData.createdAt = new Date();
+            needsUpdate = true;
+          }
+          
           // Ensure default admin is always active and admin
           if (user.email === 'ghanshyampatel4721@gmail.com') {
             if (role !== 'admin' || !active) {
               role = 'admin';
               active = true;
-              await setDoc(doc(db, 'users', user.uid), { ...data, role, isActive: true }, { merge: true });
+              updateData.role = 'admin';
+              updateData.isActive = true;
+              needsUpdate = true;
             }
+          }
+
+          if (needsUpdate) {
+            await setDoc(doc(db, 'users', user.uid), updateData, { merge: true });
           }
         } else {
           const isDefaultAdmin = user.email === 'ghanshyampatel4721@gmail.com';

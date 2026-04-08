@@ -32,23 +32,25 @@ export function UserManager() {
     return () => unsubscribe();
   }, []);
 
-  const toggleStatus = async (userId: string, currentStatus: boolean) => {
+  const toggleStatus = async (user: any) => {
     try {
-      await updateDoc(doc(db, 'users', userId), {
-        isActive: !currentStatus
-      });
+      const updateData: any = { isActive: !user.isActive };
+      if (!user.createdAt) updateData.createdAt = new Date();
+      
+      await updateDoc(doc(db, 'users', user.id), updateData);
       toast.success(t('status_updated') || 'Status updated');
     } catch (error) {
       handleFirestoreError(error, OperationType.UPDATE, 'users');
     }
   };
 
-  const toggleRole = async (userId: string, currentRole: string) => {
-    const newRole = currentRole === 'admin' ? 'user' : 'admin';
+  const toggleRole = async (user: any) => {
+    const newRole = user.role === 'admin' ? 'user' : 'admin';
     try {
-      await updateDoc(doc(db, 'users', userId), {
-        role: newRole
-      });
+      const updateData: any = { role: newRole };
+      if (!user.createdAt) updateData.createdAt = new Date();
+
+      await updateDoc(doc(db, 'users', user.id), updateData);
       toast.success(t('role_updated') || 'Role updated');
     } catch (error) {
       handleFirestoreError(error, OperationType.UPDATE, 'users');
@@ -136,7 +138,7 @@ export function UserManager() {
                             "h-8 gap-1 font-bold text-[10px] uppercase tracking-wider",
                             user.isActive ? "text-amber-600 border-amber-200 hover:bg-amber-50" : "text-green-600 border-green-200 hover:bg-green-50"
                           )}
-                          onClick={() => toggleStatus(user.id, user.isActive)}
+                          onClick={() => toggleStatus(user)}
                         >
                           {user.isActive ? <UserX className="h-3 w-3" /> : <UserCheck className="h-3 w-3" />}
                           {user.isActive ? t('deactivate') : t('activate')}
@@ -146,7 +148,7 @@ export function UserManager() {
                           variant="outline" 
                           size="sm" 
                           className="h-8 gap-1 font-bold text-[10px] uppercase tracking-wider"
-                          onClick={() => toggleRole(user.id, user.role)}
+                          onClick={() => toggleRole(user)}
                         >
                           {user.role === 'admin' ? <ShieldAlert className="h-3 w-3" /> : <Shield className="h-3 w-3" />}
                           {user.role === 'admin' ? t('remove_admin') : t('make_admin')}

@@ -91,12 +91,14 @@ service cloud.firestore {
     // Domain Validators
     // ===============================================================
 
-    function isValidUser(data) {
-      return hasRequiredFields(['uid', 'email', 'role']) &&
-             hasOnlyAllowedFields(['uid', 'email', 'role', 'displayName']) &&
-             data.uid == request.auth.uid &&
+    function isValidUser(data, userId) {
+      return hasRequiredFields(['uid', 'email', 'role', 'isActive', 'createdAt']) &&
+             hasOnlyAllowedFields(['uid', 'email', 'role', 'displayName', 'isActive', 'createdAt']) &&
+             data.uid == userId &&
              isValidEmail(data.email) &&
-             data.role in ['admin', 'user'];
+             data.role in ['admin', 'user'] &&
+             data.isActive is bool &&
+             data.createdAt is timestamp;
     }
 
     function isValidPurchase(data) {
@@ -171,8 +173,9 @@ service cloud.firestore {
 
     match /users/{userId} {
       allow read: if isAuthenticated();
-      allow create: if isAuthenticated() && isValidUser(request.resource.data) && (isOwner(userId) || isAdmin());
-      allow update: if isAuthenticated() && isValidUser(request.resource.data) && (isAdmin() || (isOwner(userId) && request.resource.data.role == resource.data.role));
+      allow create: if isAuthenticated() && isValidUser(request.resource.data, userId) && (isOwner(userId) || isAdmin());
+      allow update: if isAuthenticated() && isValidUser(request.resource.data, userId) && (isAdmin() || (isOwner(userId) && request.resource.data.role == resource.data.role && request.resource.data.isActive == resource.data.isActive));
+      allow delete: if isAdmin();
     }
 
     match /purchases/{purchaseId} {
