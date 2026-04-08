@@ -337,28 +337,15 @@ export function InvoiceGenerator() {
 
       <style dangerouslySetInnerHTML={{ __html: `
         @media print {
-          body * {
-            visibility: hidden;
-          }
-          .invoice-print-area, .invoice-print-area * {
-            visibility: visible;
-          }
-          .invoice-print-area {
-            position: absolute;
-            left: 0;
-            top: 0;
-            width: 100%;
-            padding: 0 !important;
+          .no-print {
+            display: none !important;
           }
           .print-shadow-none {
             box-shadow: none !important;
             border: none !important;
           }
-          .no-print {
-            display: none !important;
-          }
           @page {
-            margin: 0;
+            margin: 1cm;
           }
           .invoice-print-area {
             padding: 2cm !important;

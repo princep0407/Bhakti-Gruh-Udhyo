@@ -225,8 +225,7 @@ export function Logs() {
     const style = document.createElement('style');
     style.innerHTML = `
       @media print {
-        body * { visibility: hidden; }
-        .print-only-invoice, .print-only-invoice * { visibility: visible; }
+        .no-print { display: none !important; }
         .print-only-invoice { position: absolute; left: 0; top: 0; width: 100%; }
       }
     `;

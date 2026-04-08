@@ -275,8 +275,8 @@ export default function App() {
       <aside className={`fixed inset-y-0 left-0 z-50 w-72 bg-white border-r shadow-2xl transform transition-transform duration-500 ease-in-out lg:relative lg:translate-x-0 flex flex-col ${isMobileMenuOpen ? 'translate-x-0' : '-translate-x-full'}`}>
         <div className="p-8 border-b flex items-center justify-between bg-gradient-to-br from-primary/5 to-transparent">
           <div className="flex items-center gap-3">
-            <div className="bg-primary p-2 rounded-xl shadow-lg shadow-primary/20">
-              <Package className="h-6 w-6 text-white" />
+            <div className="p-1 overflow-hidden">
+              <img src="https://i.postimg.cc/VLGxfS39/Bhakti-logo.png" alt="Logo" className="h-8 w-8 object-contain" />
             </div>
             <h1 className="text-xl font-black text-primary tracking-tight">
               {t('app_title')}
@@ -288,7 +288,7 @@ export default function App() {
         </div>
 
         <Tabs value={activeTab} onValueChange={(v) => { setActiveTab(v); setIsMobileMenuOpen(false); }} className="flex-1 flex flex-col overflow-hidden">
-          <TabsList className="flex-1 flex-col items-stretch justify-start p-4 space-y-1 bg-transparent h-auto overflow-y-auto">
+          <TabsList className="flex-1 flex-col items-stretch justify-start p-4 space-y-1 bg-transparent h-auto overflow-y-auto w-full">
             {navItems.map(item => {
               if (item.adminOnly && !isAdmin) return null;
               return (
