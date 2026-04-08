@@ -164,7 +164,7 @@ export default function App() {
           <div className="bg-gradient-to-r from-primary to-accent h-2 w-full" />
           <CardHeader className="text-center space-y-4 pt-8">
             <div className="mx-auto bg-primary/10 p-4 rounded-2xl w-fit shadow-inner">
-              <Package className="h-12 w-12 text-primary" />
+              <img src="https://i.postimg.cc/dtwCs38R/Bhakti-Logo-black.png" alt="Logo" className="h-12 w-12 object-contain" />
             </div>
             <div className="space-y-2">
               <CardTitle className="text-4xl font-bold tracking-tight text-gradient">{t('app_title')}</CardTitle>
@@ -275,12 +275,9 @@ export default function App() {
       <aside className={`fixed inset-y-0 left-0 z-50 w-72 bg-white border-r shadow-2xl transform transition-transform duration-500 ease-in-out lg:relative lg:translate-x-0 flex flex-col ${isMobileMenuOpen ? 'translate-x-0' : '-translate-x-full'}`}>
         <div className="p-8 border-b flex items-center justify-between bg-gradient-to-br from-primary/5 to-transparent">
           <div className="flex items-center gap-3">
-            <div className="p-1 overflow-hidden">
-              <img src="https://i.postimg.cc/VLGxfS39/Bhakti-logo.png" alt="Logo" className="h-8 w-8 object-contain" />
+            <div className="p-1 overflow-hidden flex justify-center">
+              <img src="https://i.postimg.cc/dtwCs38R/Bhakti-Logo-black.png" alt="Logo" className="h-12 w-12 object-contain" />
             </div>
-            <h1 className="text-xl font-black text-primary tracking-tight">
-              {t('app_title')}
-            </h1>
           </div>
           <button className="lg:hidden text-slate-400 hover:text-primary transition-colors" onClick={() => setIsMobileMenuOpen(false)}>
             <X className="h-6 w-6" />
@@ -331,8 +328,7 @@ export default function App() {
       <main className="flex-1 flex flex-col h-screen overflow-hidden relative">
         <header className="h-16 bg-white border-b flex items-center justify-between px-4 lg:hidden shrink-0">
           <div className="flex items-center gap-2">
-            <Package className="h-6 w-6 text-primary" />
-            <span className="font-bold text-primary">{t('app_title')}</span>
+            <img src="https://i.postimg.cc/dtwCs38R/Bhakti-Logo-black.png" alt="Logo" className="h-8 w-8 object-contain" />
           </div>
           <Button variant="ghost" size="icon" onClick={() => setIsMobileMenuOpen(true)}>
             <Menu className="h-6 w-6" />
