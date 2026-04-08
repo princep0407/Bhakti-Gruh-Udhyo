@@ -1,0 +1,133 @@
+{
+  "entities": {
+    "User": {
+      "title": "User",
+      "description": "Application user profile",
+      "type": "object",
+      "properties": {
+        "uid": { "type": "string" },
+        "email": { "type": "string", "format": "email" },
+        "displayName": { "type": "string" },
+        "role": { "type": "string", "enum": ["admin", "user"] }
+      },
+      "required": ["uid", "email", "role"]
+    },
+    "Purchase": {
+      "title": "Purchase",
+      "description": "Stock purchase record (ખરીદ)",
+      "type": "object",
+      "properties": {
+        "date": { "type": "string", "format": "date-time" },
+        "chalanNo": { "type": "string" },
+        "billNo": { "type": "string" },
+        "category": { "type": "string" },
+        "itemName": { "type": "string" },
+        "weight": { "type": "number", "description": "Quantity/Weight" },
+        "unit": { "type": "string", "description": "Unit (KG, Ltr, etc.)" },
+        "source": { "type": "string", "description": "Purchase location (ખરીદ સ્થળ)" },
+        "expiryDate": { "type": "string", "format": "date-time", "description": "Optional expiry date" },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "createdBy": { "type": "string" },
+        "createdByName": { "type": "string" }
+      },
+      "required": ["date", "category", "itemName", "weight", "unit", "source", "createdAt", "createdBy", "createdByName"]
+    },
+    "Consumption": {
+      "title": "Consumption",
+      "description": "Stock consumption record (વપરાશ)",
+      "type": "object",
+      "properties": {
+        "date": { "type": "string", "format": "date-time" },
+        "category": { "type": "string" },
+        "itemName": { "type": "string" },
+        "consumerName": { "type": "string" },
+        "usageType": { "type": "string", "enum": ["નમકીન", "બેકરી", "સ્ટાફ રસોડુ", "કેટરસ", "સ્વા.ધામ", "પૂ.સંતો", "ઇન્ટરનલ"] },
+        "sourceLocation": { "type": "string", "enum": ["મેઇન કોઠાર", "કોલ્ડ સ્ટોરેજ"] },
+        "weight": { "type": "number", "description": "Quantity/Weight" },
+        "unit": { "type": "string", "description": "Unit (KG, Ltr, etc.)" },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "createdBy": { "type": "string" },
+        "createdByName": { "type": "string" }
+      },
+      "required": ["date", "category", "itemName", "consumerName", "usageType", "sourceLocation", "weight", "unit", "createdAt", "createdBy", "createdByName"]
+    },
+    "Ingredient": {
+      "title": "Ingredient",
+      "description": "Master list of ingredients",
+      "type": "object",
+      "properties": {
+        "name": { "type": "string" },
+        "category": { "type": "string" },
+        "unit": { "type": "string" },
+        "parLevel": { "type": "number", "description": "Minimum stock level for alerts" }
+      },
+      "required": ["name", "category", "unit"]
+    },
+    "StockTake": {
+      "title": "StockTake",
+      "description": "Physical stock count for audit (સ્ટોક તફાવત)",
+      "type": "object",
+      "properties": {
+        "date": { "type": "string", "format": "date-time" },
+        "itemName": { "type": "string" },
+        "theoreticalStock": { "type": "number" },
+        "actualStock": { "type": "number" },
+        "variance": { "type": "number" },
+        "unit": { "type": "string" },
+        "notes": { "type": "string" },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "createdBy": { "type": "string" }
+      },
+      "required": ["date", "itemName", "theoreticalStock", "actualStock", "variance", "unit", "createdAt", "createdBy"]
+    },
+    "Category": {
+      "title": "Category",
+      "description": "Master list of categories",
+      "type": "object",
+      "properties": {
+        "name": { "type": "string" },
+        "order": { "type": "number" }
+      },
+      "required": ["name"]
+    },
+    "Unit": {
+      "title": "Unit",
+      "description": "Master list of units",
+      "type": "object",
+      "properties": {
+        "name": { "type": "string" }
+      },
+      "required": ["name"]
+    }
+  },
+  "firestore": {
+    "/users/{uid}": {
+      "schema": "User",
+      "description": "User profiles"
+    },
+    "/purchases/{purchaseId}": {
+      "schema": "Purchase",
+      "description": "Purchase records"
+    },
+    "/consumptions/{consumptionId}": {
+      "schema": "Consumption",
+      "description": "Consumption records"
+    },
+    "/ingredients/{ingredientId}": {
+      "schema": "Ingredient",
+      "description": "Master list of ingredients"
+    },
+    "/categories/{categoryId}": {
+      "schema": "Category",
+      "description": "Master list of categories"
+    },
+    "/units/{unitId}": {
+      "schema": "Unit",
+      "description": "Master list of units"
+    },
+    "/stockTakes/{stockTakeId}": {
+      "schema": "StockTake",
+      "description": "Physical stock count records"
+    }
+  }
+}

@@ -1,0 +1,220 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // ===============================================================
+    // Assumed Data Model
+    // ===============================================================
+    //
+    // Collection: users
+    // Document ID: {uid}
+    // Fields:
+    //   - uid: string (required)
+    //   - email: string (required, email format)
+    //   - displayName: string (optional)
+    //   - role: string (required, enum: ['admin', 'user'])
+    //
+    // Collection: purchases
+    // Document ID: {purchaseId}
+    // Fields:
+    //   - date: timestamp (required)
+    //   - chalanNo: string (optional)
+    //   - billNo: string (optional)
+    //   - itemName: string (required)
+    //   - weight: number (required, positive)
+    //   - source: string (required)
+    //   - createdAt: timestamp (required)
+    //   - createdBy: string (required, uid)
+    //   - createdByName: string (required)
+    //
+    // Collection: consumptions
+    // Document ID: {consumptionId}
+    // Fields:
+    //   - date: timestamp (required)
+    //   - itemName: string (required)
+    //   - consumerName: string (required)
+    //   - usageType: string (required, enum)
+    //   - sourceLocation: string (required, enum)
+    //   - weight: number (required, positive)
+    //   - createdAt: timestamp (required)
+    //   - createdBy: string (required, uid)
+    //   - createdByName: string (required)
+    //
+    // ===============================================================
+
+    // Collection: ingredients
+    // Document ID: {ingredientId}
+    // Fields:
+    //   - name: string (required)
+    //   - category: string (required)
+    //   - unit: string (required)
+    //
+    // Collection: units
+    // Document ID: {unitId}
+    // Fields:
+    //   - name: string (required)
+    //
+    // ===============================================================
+
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    function isOwner(userId) {
+      return isAuthenticated() && request.auth.uid == userId;
+    }
+
+    function isAdmin() {
+      return isAuthenticated() &&
+        ((exists(/databases/$(database)/documents/users/$(request.auth.uid)) && 
+          get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin') ||
+          (request.auth.token.email == "ghanshyampatel4721@gmail.com")); // Owner email bypasses verification for admin status
+    }
+
+    function hasRequiredFields(fields) {
+      return request.resource.data.keys().hasAll(fields);
+    }
+
+    function hasOnlyAllowedFields(fields) {
+      return request.resource.data.keys().hasOnly(fields);
+    }
+
+    function isValidEmail(email) {
+      return email is string && email.matches("^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$");
+    }
+
+    function isPositive(field) {
+      return request.resource.data[field] is number && request.resource.data[field] > 0;
+    }
+
+    // ===============================================================
+    // Domain Validators
+    // ===============================================================
+
+    function isValidUser(data) {
+      return hasRequiredFields(['uid', 'email', 'role']) &&
+             hasOnlyAllowedFields(['uid', 'email', 'role', 'displayName']) &&
+             data.uid == request.auth.uid &&
+             isValidEmail(data.email) &&
+             data.role in ['admin', 'user'];
+    }
+
+    function isValidPurchase(data) {
+      return hasRequiredFields(['date', 'category', 'itemName', 'weight', 'unit', 'source', 'storageLocation', 'createdAt', 'createdBy', 'createdByName']) &&
+             data.date is timestamp &&
+             data.category is string && data.category.size() > 0 &&
+             data.itemName is string && data.itemName.size() > 0 && data.itemName.size() < 200 &&
+             data.weight is number && data.weight > 0 &&
+             data.unit is string && data.unit.size() > 0 &&
+             data.source is string && data.source.size() > 0 && data.source.size() < 200 &&
+             data.storageLocation is string && data.storageLocation.size() > 0 &&
+             (!('expiryDate' in data) || data.expiryDate == null || data.expiryDate is timestamp) &&
+             (!('chalanNo' in data) || data.chalanNo is string) &&
+             (!('billNo' in data) || data.billNo is string) &&
+             data.createdAt is timestamp &&
+             data.createdBy == request.auth.uid &&
+             data.createdByName is string;
+    }
+
+    function isValidConsumption(data) {
+      return hasRequiredFields(['date', 'category', 'itemName', 'consumerName', 'usageType', 'sourceLocation', 'weight', 'unit', 'createdAt', 'createdBy', 'createdByName']) &&
+             data.date is timestamp &&
+             data.category is string && data.category.size() > 0 &&
+             data.itemName is string && data.itemName.size() > 0 && data.itemName.size() < 200 &&
+             data.consumerName is string && data.consumerName.size() > 0 && data.consumerName.size() < 200 &&
+             data.usageType is string && data.usageType.size() > 0 &&
+             data.sourceLocation is string && data.sourceLocation.size() > 0 &&
+             data.weight is number && data.weight > 0 &&
+             data.unit is string && data.unit.size() > 0 &&
+             data.createdAt is timestamp &&
+             data.createdBy == request.auth.uid &&
+             data.createdByName is string;
+    }
+
+    function isValidIngredient(data) {
+      return hasRequiredFields(['name', 'category', 'unit']) &&
+             hasOnlyAllowedFields(['name', 'category', 'unit', 'parLevel']) &&
+             data.name is string && data.name.size() > 0 && data.name.size() < 200 &&
+             data.category is string && data.category.size() > 0 && data.category.size() < 200 &&
+             data.unit is string && data.unit.size() > 0 &&
+             (!('parLevel' in data) || data.parLevel is number);
+    }
+
+    function isValidStockTake(data) {
+      return hasRequiredFields(['date', 'itemName', 'theoreticalStock', 'actualStock', 'variance', 'unit', 'createdAt', 'createdBy']) &&
+             data.date is timestamp &&
+             data.itemName is string &&
+             data.theoreticalStock is number &&
+             data.actualStock is number &&
+             data.variance is number &&
+             data.unit is string &&
+             data.createdAt is timestamp &&
+             data.createdBy == request.auth.uid;
+    }
+
+    function isValidCategory(data) {
+      return hasRequiredFields(['name']) &&
+             hasOnlyAllowedFields(['name', 'order']) &&
+             data.name is string && data.name.size() > 0 && data.name.size() < 100 &&
+             (!('order' in data) || data.order is number);
+    }
+
+    function isValidUnit(data) {
+      return hasRequiredFields(['name']) &&
+             hasOnlyAllowedFields(['name']) &&
+             data.name is string && data.name.size() > 0 && data.name.size() < 50;
+    }
+
+    // ===============================================================
+    // Rules
+    // ===============================================================
+
+    match /users/{userId} {
+      allow read: if isAuthenticated();
+      allow create: if isAuthenticated() && isValidUser(request.resource.data) && (isOwner(userId) || isAdmin());
+      allow update: if isAuthenticated() && isValidUser(request.resource.data) && (isAdmin() || (isOwner(userId) && request.resource.data.role == resource.data.role));
+    }
+
+    match /purchases/{purchaseId} {
+      allow read: if isAuthenticated();
+      allow create: if isAuthenticated() && isValidPurchase(request.resource.data);
+      allow update: if isAuthenticated() && isValidPurchase(request.resource.data) && (isAdmin() || request.auth.uid == resource.data.createdBy);
+      allow delete: if isAdmin();
+    }
+
+    match /consumptions/{consumptionId} {
+      allow read: if isAuthenticated();
+      allow create: if isAuthenticated() && isValidConsumption(request.resource.data);
+      allow update: if isAuthenticated() && isValidConsumption(request.resource.data) && (isAdmin() || request.auth.uid == resource.data.createdBy);
+      allow delete: if isAdmin();
+    }
+
+    match /ingredients/{ingredientId} {
+      allow read: if isAuthenticated();
+      allow create, update: if isAdmin() && isValidIngredient(request.resource.data);
+      allow delete: if isAdmin();
+    }
+
+    match /categories/{categoryId} {
+      allow read: if isAuthenticated();
+      allow create, update: if isAuthenticated() && isValidCategory(request.resource.data);
+      allow delete: if isAuthenticated();
+    }
+
+    match /units/{unitId} {
+      allow read: if isAuthenticated();
+      allow create, update: if isAdmin() && isValidUnit(request.resource.data);
+      allow delete: if isAdmin();
+    }
+
+    match /stockTakes/{stockTakeId} {
+      allow read: if isAuthenticated();
+      allow create: if isAuthenticated() && isValidStockTake(request.resource.data);
+      allow update, delete: if isAdmin();
+    }
+
+    match /{path=**} {
+      allow read, write: if false;
+    }
+  }
+}
