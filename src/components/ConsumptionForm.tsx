@@ -135,7 +135,7 @@ export function ConsumptionForm() {
       const availableStock = currentStock[stockKey] || 0;
 
       if (weightVal > availableStock) {
-        toast.error(`${t('insufficient_stock')} ${t('available_stock')}: ${availableStock} ${pendingItem.unit || selectedUnit}`);
+        toast.error(`${t('insufficient_stock')} ${t('available_stock')}: ${availableStock.toFixed(2)} ${pendingItem.unit || selectedUnit}`);
         return;
       }
 

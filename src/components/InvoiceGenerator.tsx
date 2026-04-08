@@ -233,106 +233,104 @@ export function InvoiceGenerator() {
             </div>
           </CardHeader>
           <CardContent className="p-0">
-            {/* Invoice Printable Area */}
-            <div className="invoice-print-area bg-white p-8 sm:p-12 min-h-[800px]">
-              {/* Header */}
-              <div className="flex justify-between items-start border-b-2 border-foreground pb-8 mb-8">
-                <div>
-                  <h1 className="text-4xl font-black text-foreground tracking-tight uppercase">{t('app_title')}</h1>
-                  <p className="text-muted-foreground mt-1 text-lg">Consumption Invoice / Delivery Challan</p>
-                </div>
-                <div className="text-right">
-                  <div className="inline-block bg-muted px-4 py-2 rounded-lg border border-border">
-                    <p className="text-sm text-muted-foreground font-medium uppercase tracking-wider mb-1">{t('inv_invoice')} No</p>
-                    <p className="text-xl font-bold text-foreground">{invoiceNo}</p>
-                  </div>
-                </div>
-              </div>
-              
-              {/* Meta Info */}
-              <div className="grid grid-cols-2 gap-8 mb-8">
-                <div className="space-y-4">
-                  <div>
-                    <p className="text-xs font-bold text-muted-foreground uppercase tracking-wider mb-1">Bill To / {t('inv_consumer')}</p>
-                    <p className="text-lg font-bold text-foreground">{consumerName || 'All Consumers'}</p>
-                  </div>
-                </div>
-                <div className="space-y-4 text-right">
-                  <div>
-                    <p className="text-xs font-bold text-muted-foreground uppercase tracking-wider mb-1">{t('period')}</p>
-                    <p className="text-foreground font-medium">{format(new Date(startDate), 'dd MMM, yyyy')} — {format(new Date(endDate), 'dd MMM, yyyy')}</p>
-                  </div>
-                  <div>
-                    <p className="text-xs font-bold text-muted-foreground uppercase tracking-wider mb-1">{t('generated_on')}</p>
-                    <p className="text-foreground font-medium">{format(new Date(), 'dd MMM, yyyy HH:mm')}</p>
-                  </div>
-                </div>
-              </div>
- 
-              {/* Table */}
-              <div className="rounded-xl border border-border overflow-hidden mb-8">
-                <table className="w-full text-sm text-left">
-                  <thead className="bg-foreground text-white font-semibold">
-                    <tr>
-                      <th className="px-4 py-3 w-16 text-center">{t('sr_no')}</th>
-                      <th className="px-4 py-3">{t('inv_date')}</th>
-                      <th className="px-4 py-3">{t('item_description')}</th>
-                      <th className="px-4 py-3">{t('inv_category')}</th>
-                      <th className="px-4 py-3">{t('inv_usage_type')}</th>
-                      <th className="px-4 py-3 text-right">{t('inv_qty')}</th>
-                      <th className="px-4 py-3 text-center no-print w-12"></th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-border">
-                    {consumptions.map((item, i) => (
-                      <tr key={item.id || i} className="hover:bg-muted transition-colors group">
-                        <td className="px-4 py-3 text-center text-muted-foreground font-medium">{i + 1}</td>
-                        <td className="px-4 py-3 text-muted-foreground whitespace-nowrap">{format(item.date, 'dd/MM/yyyy')}</td>
-                        <td className="px-4 py-3 font-bold text-foreground">
-                          {item.itemName}
-                          {!consumerName && item.consumerName && (
-                            <span className="block text-xs font-normal text-muted-foreground mt-0.5">{t('inv_consumer')}: {item.consumerName}</span>
-                          )}
-                        </td>
-                        <td className="px-4 py-3 text-muted-foreground">
-                          <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-muted text-muted-foreground">
-                            {item.category}
-                          </span>
-                        </td>
-                        <td className="px-4 py-3 text-muted-foreground">{t(item.usageType || '-')}</td>
-                        <td className="px-4 py-3 text-right font-black text-foreground whitespace-nowrap">
-                          {item.weight} <span className="text-xs font-medium text-muted-foreground">{item.unit}</span>
-                        </td>
-                        <td className="px-4 py-3 text-center no-print">
-                          <Button 
-                            variant="ghost" 
-                            size="icon" 
-                            className="h-8 w-8 text-muted-foreground/50 hover:text-destructive opacity-0 group-hover:opacity-100 transition-opacity"
-                            onClick={() => removeItem(item.id)}
-                          >
-                            <Trash2 className="h-4 w-4" />
-                          </Button>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-              
-              {/* Summary & Signatures */}
-              <div className="flex justify-between items-end mt-16 pt-8 border-t border-border">
-                <div className="text-muted-foreground text-sm">
-                  <p className="font-medium text-foreground flex items-center gap-2 mb-1">
-                    <Package className="h-4 w-4" /> {t('total_items')}: {consumptions.length}
-                  </p>
-                  <p>{t('comp_gen')}</p>
-                </div>
-                <div className="text-center w-48">
-                  <div className="border-b border-muted-foreground h-12 mb-2"></div>
-                  <p className="text-sm font-bold text-foreground uppercase tracking-wider">{t('auth_sign')}</p>
-                </div>
-              </div>
+      {/* Invoice Printable Area */}
+      <div className="invoice-print-area bg-white p-8 sm:p-12 min-h-[800px] text-black">
+        {/* Header */}
+        <div className="flex justify-between items-start border-b-4 border-black pb-8 mb-8">
+          <div>
+            <h1 className="text-5xl font-black tracking-tight uppercase leading-none">{t('app_title')}</h1>
+            <p className="text-gray-600 mt-2 text-xl font-bold">Consumption Invoice / Delivery Challan</p>
+          </div>
+          <div className="text-right">
+            <div className="inline-block bg-gray-100 px-6 py-3 rounded-xl border-2 border-gray-200">
+              <p className="text-xs text-gray-500 font-bold uppercase tracking-widest mb-1">{t('inv_invoice')} No</p>
+              <p className="text-2xl font-black">{invoiceNo}</p>
             </div>
+          </div>
+        </div>
+        
+        {/* Meta Info */}
+        <div className="grid grid-cols-2 gap-12 mb-10">
+          <div className="space-y-4">
+            <div>
+              <p className="text-xs font-black text-gray-400 uppercase tracking-widest mb-1">Bill To / {t('inv_consumer')}</p>
+              <p className="text-2xl font-black border-l-4 border-black pl-4 py-1">{consumerName || 'All Consumers'}</p>
+            </div>
+          </div>
+          <div className="space-y-4 text-right">
+            <div className="flex flex-col items-end">
+              <p className="text-xs font-black text-gray-400 uppercase tracking-widest mb-1">{t('period')}</p>
+              <p className="text-lg font-bold">{format(new Date(startDate), 'dd MMM, yyyy')} — {format(new Date(endDate), 'dd MMM, yyyy')}</p>
+            </div>
+            <div className="flex flex-col items-end">
+              <p className="text-xs font-black text-gray-400 uppercase tracking-widest mb-1">{t('generated_on')}</p>
+              <p className="text-lg font-bold">{format(new Date(), 'dd MMM, yyyy HH:mm')}</p>
+            </div>
+          </div>
+        </div>
+
+        {/* Table */}
+        <div className="rounded-2xl border-2 border-black overflow-hidden mb-10 shadow-sm">
+          <table className="w-full text-base text-left border-collapse">
+            <thead className="bg-black text-white">
+              <tr>
+                <th className="px-6 py-4 w-20 text-center border-r border-gray-700">{t('sr_no')}</th>
+                <th className="px-6 py-4 border-r border-gray-700">{t('inv_date')}</th>
+                <th className="px-6 py-4 border-r border-gray-700">{t('item_description')}</th>
+                <th className="px-6 py-4 border-r border-gray-700">{t('inv_usage_type')}</th>
+                <th className="px-6 py-4 text-right">{t('inv_qty')}</th>
+                <th className="px-6 py-4 text-center no-print w-12"></th>
+              </tr>
+            </thead>
+            <tbody className="divide-y-2 divide-gray-100">
+              {consumptions.map((item, i) => (
+                <tr key={item.id || i} className="hover:bg-gray-50 transition-colors group">
+                  <td className="px-6 py-4 text-center text-gray-500 font-bold border-r border-gray-100">{i + 1}</td>
+                  <td className="px-6 py-4 text-gray-600 font-medium whitespace-nowrap border-r border-gray-100">{format(item.date, 'dd/MM/yyyy')}</td>
+                  <td className="px-6 py-4 border-r border-gray-100">
+                    <p className="font-black text-lg leading-tight">{item.itemName}</p>
+                    <p className="text-xs font-bold text-gray-400 uppercase tracking-wider mt-1">{item.category}</p>
+                    {!consumerName && item.consumerName && (
+                      <p className="text-xs font-bold text-primary mt-1">{t('inv_consumer')}: {item.consumerName}</p>
+                    )}
+                  </td>
+                  <td className="px-6 py-4 text-gray-600 font-bold border-r border-gray-100">{t(item.usageType || '-')}</td>
+                  <td className="px-6 py-4 text-right font-black text-xl whitespace-nowrap">
+                    {item.weight} <span className="text-sm font-bold text-gray-400">{item.unit}</span>
+                  </td>
+                  <td className="px-6 py-4 text-center no-print">
+                    <Button 
+                      variant="ghost" 
+                      size="icon" 
+                      className="h-8 w-8 text-gray-300 hover:text-destructive opacity-0 group-hover:opacity-100 transition-opacity"
+                      onClick={() => removeItem(item.id)}
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </Button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+        
+        {/* Summary & Signatures */}
+        <div className="grid grid-cols-2 gap-12 mt-20 pt-10 border-t-4 border-black">
+          <div className="space-y-4">
+            <div className="bg-gray-50 p-6 rounded-2xl border-2 border-gray-100 inline-block min-w-[200px]">
+              <p className="text-xs font-black text-gray-400 uppercase tracking-widest mb-2 flex items-center gap-2">
+                <Package className="h-4 w-4" /> Summary
+              </p>
+              <p className="text-2xl font-black">{t('total_items')}: {consumptions.length}</p>
+            </div>
+            <p className="text-sm font-bold text-gray-400 italic">{t('comp_gen')}</p>
+          </div>
+          <div className="flex flex-col items-center justify-end">
+            <div className="w-64 border-b-4 border-black mb-4"></div>
+            <p className="text-lg font-black uppercase tracking-widest">{t('auth_sign')}</p>
+          </div>
+        </div>
+      </div>
           </CardContent>
         </Card>
       )}
@@ -360,7 +358,10 @@ export function InvoiceGenerator() {
             display: none !important;
           }
           @page {
-            margin: 1cm;
+            margin: 0;
+          }
+          .invoice-print-area {
+            padding: 2cm !important;
           }
         }
       `}} />

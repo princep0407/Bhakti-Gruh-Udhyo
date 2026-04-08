@@ -931,9 +931,37 @@ export function Reports() {
           .pvtUi { display: none !important; }
           .pvtTable { width: 100% !important; border-collapse: collapse !important; }
           .pvtTable th, .pvtTable td { border: 1px solid #ddd !important; padding: 8px !important; }
-          body { background: white !important; }
+          body { background: white !important; padding: 0 !important; margin: 0 !important; }
           .neo-shadow { box-shadow: none !important; }
           .glass { background: white !important; border: 1px solid #ddd !important; }
+          
+          /* Daily Report Print */
+          .daily-detail-print {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: white;
+            z-index: 9999;
+            padding: 2cm !important;
+            visibility: visible !important;
+          }
+          .daily-detail-print * {
+            visibility: visible !important;
+          }
+          body > *:not(.daily-detail-print) {
+            display: none !important;
+          }
+          
+          /* Table styling for print */
+          table { width: 100% !important; border-collapse: collapse !important; }
+          th, td { border: 1px solid #eee !important; padding: 10px !important; }
+          thead { background-color: #f8fafc !important; -webkit-print-color-adjust: exact; }
+          
+          @page {
+            margin: 0;
+          }
         }
       `}} />
     </div>
