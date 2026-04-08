@@ -12,17 +12,19 @@ import { ConsumptionForm } from './components/ConsumptionForm';
 import { StockTable } from './components/StockTable';
 import { AdminDashboard } from './components/AdminDashboard';
 import { IngredientsManager } from './components/IngredientsManager';
+import { UserManager } from './components/UserManager';
 import { Reports } from './components/Reports';
 import { Logs } from './components/Logs';
 import { Toaster } from '@/components/ui/sonner';
 import { toast } from 'sonner';
-import { LogIn, LogOut, Package, ShoppingCart, Utensils, LayoutDashboard, History, List, FileBarChart, FileText, Menu, X } from 'lucide-react';
+import { LogIn, LogOut, Package, ShoppingCart, Utensils, LayoutDashboard, History, List, FileBarChart, FileText, Menu, X, ShieldAlert, Users } from 'lucide-react';
 import { useLanguage } from './contexts/LanguageContext';
 
 export default function App() {
   const { t, lang, setLang } = useLanguage();
   const [user, setUser] = useState<User | null>(null);
   const [isAdmin, setIsAdmin] = useState(false);
+  const [isActive, setIsActive] = useState(false);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState('purchase');
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -38,25 +40,47 @@ export default function App() {
       if (user) {
         const userDoc = await getDoc(doc(db, 'users', user.uid));
         let role = 'user';
+        let active = false;
+        
         if (userDoc.exists()) {
-          role = userDoc.data().role;
+          const data = userDoc.data();
+          role = data.role || 'user';
+          active = data.isActive ?? false;
+          
+          // Ensure default admin is always active and admin
+          if (user.email === 'ghanshyampatel4721@gmail.com') {
+            if (role !== 'admin' || !active) {
+              role = 'admin';
+              active = true;
+              await setDoc(doc(db, 'users', user.uid), { ...data, role, isActive: true }, { merge: true });
+            }
+          }
         } else {
-          role = user.email === 'ghanshyampatel4721@gmail.com' ? 'admin' : 'user';
+          const isDefaultAdmin = user.email === 'ghanshyampatel4721@gmail.com';
+          role = isDefaultAdmin ? 'admin' : 'user';
+          active = isDefaultAdmin; // Default admin is active by default
+          
           await setDoc(doc(db, 'users', user.uid), {
             uid: user.uid,
             email: user.email,
             displayName: user.displayName || user.email?.split('@')[0],
-            role: role
+            role: role,
+            isActive: active,
+            createdAt: new Date()
           });
         }
         setIsAdmin(role === 'admin');
+        setIsActive(active);
         setUser(user);
         if (role === 'admin') {
           setActiveTab('dashboard');
+        } else if (active) {
+          setActiveTab('purchase');
         }
       } else {
         setUser(null);
         setIsAdmin(false);
+        setIsActive(false);
       }
       setLoading(false);
     });
@@ -189,8 +213,34 @@ export default function App() {
     );
   }
 
+  if (!isActive && !isAdmin) {
+    return (
+      <div className="flex items-center justify-center min-h-screen bg-slate-50 p-4 font-sans">
+        <Card className="w-full max-w-md border-none glass neo-shadow overflow-hidden text-center">
+          <div className="bg-amber-500 h-2 w-full" />
+          <CardHeader className="pt-8">
+            <div className="mx-auto bg-amber-100 p-4 rounded-2xl w-fit mb-4">
+              <ShieldAlert className="h-12 w-12 text-amber-600" />
+            </div>
+            <CardTitle className="text-2xl font-bold text-slate-800">{t('waiting_approval')}</CardTitle>
+            <CardDescription className="text-slate-500 mt-2">
+              {t('waiting_approval_desc')}
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="pb-8">
+            <Button variant="outline" className="w-full gap-2" onClick={handleLogout}>
+              <LogOut className="h-4 w-4" />
+              {t('logout')}
+            </Button>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
+
   const navItems = [
     { id: 'dashboard', icon: LayoutDashboard, label: t('dashboard'), adminOnly: true },
+    { id: 'users', icon: Users, label: t('users'), adminOnly: true },
     { id: 'purchase', icon: ShoppingCart, label: t('purchase') },
     { id: 'consumption', icon: Utensils, label: t('consumption') },
     { id: 'history', icon: History, label: t('history') },
@@ -274,9 +324,16 @@ export default function App() {
         <div className="flex-1 overflow-auto p-4 lg:p-8 bg-slate-50/50">
           <Tabs value={activeTab} className="h-full">
             {isAdmin && (
-              <TabsContent value="dashboard" className="m-0 h-full animate-in fade-in zoom-in-95 duration-500">
-                <AdminDashboard />
-              </TabsContent>
+              <>
+                <TabsContent value="dashboard" className="m-0 h-full animate-in fade-in zoom-in-95 duration-500">
+                  <AdminDashboard />
+                </TabsContent>
+                <TabsContent value="users" className="m-0 h-full animate-in fade-in zoom-in-95 duration-500">
+                  <div className="max-w-6xl mx-auto">
+                    <UserManager />
+                  </div>
+                </TabsContent>
+              </>
             )}
             <TabsContent value="purchase" className="m-0 h-full animate-in fade-in zoom-in-95 duration-500">
               <div className="max-w-4xl mx-auto">
