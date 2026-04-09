@@ -296,31 +296,31 @@ export function Reports() {
 
       <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
         <TabsList className="flex overflow-x-auto scrollbar-hide h-auto p-1 bg-muted/50 neo-shadow no-print">
-          <TabsTrigger value="pivot" className="py-2.5 px-3 whitespace-nowrap">
+          <TabsTrigger value="pivot" className="py-2.5 px-3 whitespace-nowrap text-xs md:text-sm">
             <TableIcon className="h-4 w-4 mr-2" />
             {t('pivot_table')}
           </TabsTrigger>
-          <TabsTrigger value="daily" className="py-2.5 px-3 whitespace-nowrap">
+          <TabsTrigger value="daily" className="py-2.5 px-3 whitespace-nowrap text-xs md:text-sm">
             <Calendar className="h-4 w-4 mr-2" />
             {t('daily_report')}
           </TabsTrigger>
-          <TabsTrigger value="stock" className="py-2.5 px-3 whitespace-nowrap">
+          <TabsTrigger value="stock" className="py-2.5 px-3 whitespace-nowrap text-xs md:text-sm">
             <Package className="h-4 w-4 mr-2" />
             {t('stock_report')}
           </TabsTrigger>
-          <TabsTrigger value="usage" className="py-2.5 px-3 whitespace-nowrap">
+          <TabsTrigger value="usage" className="py-2.5 px-3 whitespace-nowrap text-xs md:text-sm">
             <TrendingUp className="h-4 w-4 mr-2" />
             {t('usage_analysis')}
           </TabsTrigger>
-          <TabsTrigger value="purchase" className="py-2.5 px-3 whitespace-nowrap">
+          <TabsTrigger value="purchase" className="py-2.5 px-3 whitespace-nowrap text-xs md:text-sm">
             <History className="h-4 w-4 mr-2" />
             {t('purchase_history')}
           </TabsTrigger>
-          <TabsTrigger value="audit" className="py-2.5 px-3 whitespace-nowrap">
+          <TabsTrigger value="audit" className="py-2.5 px-3 whitespace-nowrap text-xs md:text-sm">
             <Scale className="h-4 w-4 mr-2" />
             {t('audit_accounting')}
           </TabsTrigger>
-          <TabsTrigger value="invoice" className="py-2.5 px-3 whitespace-nowrap">
+          <TabsTrigger value="invoice" className="py-2.5 px-3 whitespace-nowrap text-xs md:text-sm">
             <Receipt className="h-4 w-4 mr-2" />
             {t('invoice')}
           </TabsTrigger>

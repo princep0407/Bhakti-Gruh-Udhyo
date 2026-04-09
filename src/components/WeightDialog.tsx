@@ -42,11 +42,9 @@ export function WeightDialog({ isOpen, onClose, onConfirm, itemName, initialWeig
         <div className="py-6 space-y-4">
           <div className="space-y-2">
             <Label className="text-slate-600">{t('item_name')}: <span className="font-bold text-slate-900">{itemName}</span></Label>
-            {stock !== undefined && (
-              <div className="text-sm bg-primary/10 text-primary px-3 py-1.5 rounded-lg font-bold inline-block">
-                {t('stock')}: {stock.toFixed(2)} {unit}
-              </div>
-            )}
+            <div className="text-sm bg-primary/10 text-primary px-3 py-1.5 rounded-lg font-bold inline-block">
+              {t('stock')}: {(stock || 0).toFixed(2)} {unit}
+            </div>
           </div>
           <div className="space-y-2">
             <Label htmlFor="item-weight" className="text-slate-600 font-medium">{t('qty')} ({t('unit')})</Label>

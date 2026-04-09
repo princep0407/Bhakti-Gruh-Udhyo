@@ -55,7 +55,7 @@ export function ItemSelector({ onSelectItem, selectedItemNames, category, placeh
       // Expand all categories initially if "All" is selected
       if (category === t('all_categories') || category === 'બધી' || category === 'All Categories') {
         const initialExpanded: Record<string, boolean> = {};
-        dynamicCategories.forEach(cat => { initialExpanded[cat] = true; });
+        dynamicCategories.forEach(cat => { initialExpanded[cat] = false; });
         setExpandedCategories(initialExpanded);
       }
     });

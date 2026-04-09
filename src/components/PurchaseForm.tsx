@@ -2,7 +2,7 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
 import { db, auth } from '../lib/firebase';
-import { collection, writeBatch, doc, serverTimestamp, getDoc } from 'firebase/firestore';
+import { collection, writeBatch, doc, serverTimestamp, getDoc, getDocs } from 'firebase/firestore';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -47,7 +47,36 @@ export function PurchaseForm() {
   const [pendingItem, setPendingItem] = useState<{ id: string; name: string; category: string; weight?: string; unit?: string } | null>(null);
   const [isWeightDialogOpen, setIsWeightDialogOpen] = useState(false);
   const [units, setUnits] = useState<string[]>([]);
+  const [currentStock, setCurrentStock] = useState<Record<string, number>>({});
   const [userName, setUserName] = useState<string>('');
+
+  useEffect(() => {
+    const fetchStock = async () => {
+      try {
+        const stockMap: Record<string, number> = {};
+        const pSnap = await getDocs(collection(db, 'purchases'));
+        const cSnap = await getDocs(collection(db, 'consumptions'));
+
+        pSnap.docs.forEach(doc => {
+          const data = doc.data();
+          const key = `${data.itemName}_${data.unit}`;
+          stockMap[key] = (stockMap[key] || 0) + (data.weight || 0);
+        });
+
+        cSnap.docs.forEach(doc => {
+          const data = doc.data();
+          const key = `${data.itemName}_${data.unit}`;
+          stockMap[key] = (stockMap[key] || 0) - (data.weight || 0);
+        });
+
+        setCurrentStock(stockMap);
+      } catch (error) {
+        handleFirestoreError(error, OperationType.GET, 'stock');
+      }
+    };
+
+    fetchStock();
+  }, []);
 
   useEffect(() => {
     const fetchUser = async () => {
@@ -310,6 +339,8 @@ export function PurchaseForm() {
         onConfirm={handleWeightConfirm}
         itemName={pendingItem?.name || ''}
         initialWeight={pendingItem?.weight || ''}
+        stock={pendingItem ? currentStock[`${pendingItem.name}_${pendingItem.unit || selectedUnit}`] : undefined}
+        unit={pendingItem?.unit || selectedUnit}
       />
     </div>
   );
