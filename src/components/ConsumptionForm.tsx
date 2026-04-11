@@ -188,6 +188,27 @@ export function ConsumptionForm() {
       });
 
       await batch.commit();
+      
+      // Save to Google Sheets
+      await fetch('/api/save-data', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          data: selectedItems.map(item => ({
+            ...data,
+            itemName: item.name,
+            category: item.category,
+            weight: parseFloat(item.weight),
+            date: data.date,
+            createdBy: auth.currentUser!.uid,
+            createdByName: userName || auth.currentUser!.email?.split('@')[0] || 'Unknown',
+          })),
+          sheetName: 'Consumptions',
+        }),
+      });
+
       toast.success(`${selectedItems.length} ${t('records_added_success')}`);
       reset();
       setSelectedItems([]);
