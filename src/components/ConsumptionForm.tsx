@@ -190,24 +190,35 @@ export function ConsumptionForm() {
       await batch.commit();
       
       // Save to Google Sheets
-      await fetch('/api/save-data', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          data: selectedItems.map(item => ({
-            ...data,
-            itemName: item.name,
-            category: item.category,
-            weight: parseFloat(item.weight),
-            date: data.date,
-            createdBy: auth.currentUser!.uid,
-            createdByName: userName || auth.currentUser!.email?.split('@')[0] || 'Unknown',
-          })),
-          sheetName: 'Consumptions',
-        }),
-      });
+      try {
+        const response = await fetch('/api/save-data', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            data: selectedItems.map(item => ({
+              ...data,
+              itemName: item.name,
+              category: item.category,
+              weight: parseFloat(item.weight),
+              date: data.date,
+              createdBy: auth.currentUser!.uid,
+              createdByName: userName || auth.currentUser!.email?.split('@')[0] || 'Unknown',
+            })),
+            sheetName: 'Consumptions',
+          }),
+        });
+        
+        if (!response.ok) {
+          const errorData = await response.json();
+          console.error('Google Sheets Save Error:', errorData);
+        } else {
+          console.log('Successfully saved to Google Sheets');
+        }
+      } catch (err) {
+        console.error('Failed to call Google Sheets API:', err);
+      }
 
       toast.success(`${selectedItems.length} ${t('records_added_success')}`);
       reset();

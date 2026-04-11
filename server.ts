@@ -16,6 +16,10 @@ async function startServer() {
 
   app.use(express.json());
 
+  app.get("/api/health", (req, res) => {
+    res.json({ status: "ok", message: "Server is running" });
+  });
+
   // API route to save data to Google Sheets
   app.post("/api/save-data", async (req, res) => {
     const { data, sheetName } = req.body;
