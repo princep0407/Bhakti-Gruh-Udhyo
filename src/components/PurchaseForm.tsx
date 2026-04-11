@@ -151,6 +151,9 @@ export function PurchaseForm() {
   };
 
   const onSubmit = async (data: PurchaseFormValues) => {
+    console.log("Purchase Form submitted with data:", data);
+    console.log("Selected items:", selectedItems);
+
     if (!auth.currentUser) return;
     if (selectedItems.length === 0) {
       toast.error(t('select_at_least_one'));

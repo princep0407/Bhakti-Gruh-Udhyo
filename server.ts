@@ -22,15 +22,22 @@ async function startServer() {
 
   // API route to save data to Google Sheets
   app.post("/api/save-data", async (req, res) => {
+    console.log("Received request to /api/save-data");
     const { data, sheetName } = req.body;
+    console.log("Sheet Name:", sheetName);
+    console.log("Data length:", Array.isArray(data) ? data.length : 1);
     
     try {
       if (!process.env.GOOGLE_SERVICE_ACCOUNT_CREDENTIALS) {
+        console.error("GOOGLE_SERVICE_ACCOUNT_CREDENTIALS is missing");
         throw new Error("GOOGLE_SERVICE_ACCOUNT_CREDENTIALS is not set");
       }
       if (!process.env.GOOGLE_SHEET_ID) {
+        console.error("GOOGLE_SHEET_ID is missing");
         throw new Error("GOOGLE_SHEET_ID is not set");
       }
+
+      console.log("Using Spreadsheet ID:", process.env.GOOGLE_SHEET_ID);
 
       const auth = new google.auth.GoogleAuth({
         credentials: JSON.parse(process.env.GOOGLE_SERVICE_ACCOUNT_CREDENTIALS),

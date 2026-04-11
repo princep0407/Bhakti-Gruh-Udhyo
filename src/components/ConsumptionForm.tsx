@@ -163,6 +163,9 @@ export function ConsumptionForm() {
   };
 
   const onSubmit = async (data: ConsumptionFormValues) => {
+    console.log("Form submitted with data:", data);
+    console.log("Selected items:", selectedItems);
+    
     if (!auth.currentUser) return;
     if (selectedItems.length === 0) {
       toast.error(t('select_at_least_one'));
