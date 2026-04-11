@@ -214,16 +214,21 @@ export function ConsumptionForm() {
         });
         
         if (!response.ok) {
-          const errorData = await response.json();
-          console.error('Google Sheets Save Error:', errorData);
-          toast.error(`Google Sheets Error: ${errorData.details || 'Unknown error'}`);
+          const errorText = await response.text();
+          console.error('Google Sheets Save Error (Raw):', errorText);
+          try {
+            const errorData = JSON.parse(errorText);
+            toast.error(`Google Sheets Error: ${errorData.details || errorData.error || 'Unknown error'}`);
+          } catch (e) {
+            toast.error(`Server Error: ${response.status} - ${errorText.substring(0, 40)}...`);
+          }
         } else {
           console.log('Successfully saved to Google Sheets');
           toast.success('Data saved to Google Sheets');
         }
       } catch (err: any) {
         console.error('Failed to call Google Sheets API:', err);
-        toast.error(`Failed to connect to Google Sheets: ${err.message}`);
+        toast.error(`Failed to connect to server: ${err.message}`);
       }
 
       toast.success(`${selectedItems.length} ${t('records_added_success')}`);
