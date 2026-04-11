@@ -47,6 +47,11 @@ async function startServer() {
       const sheets = google.sheets({ version: "v4", auth });
       const spreadsheetId = process.env.GOOGLE_SHEET_ID;
 
+      // Define headers to ensure consistent column order
+      const headers = sheetName === 'Purchases' 
+        ? ['date', 'itemName', 'category', 'weight', 'expiryDate', 'remarks', 'createdBy', 'createdByName']
+        : ['date', 'itemName', 'category', 'weight', 'remarks', 'createdBy', 'createdByName'];
+
       // Check if sheet exists, if not create it
       const spreadsheet = await sheets.spreadsheets.get({ spreadsheetId });
       const sheetExists = spreadsheet.data.sheets?.some(s => s.properties?.title === sheetName);
@@ -64,27 +69,25 @@ async function startServer() {
           }
         });
         
-        // Add headers if it's a new sheet
-        const headers = Array.isArray(data) && data.length > 0 
-          ? Object.keys(data[0]) 
-          : (!Array.isArray(data) ? Object.keys(data) : []);
-          
-        if (headers.length > 0) {
-          await sheets.spreadsheets.values.update({
-            spreadsheetId,
-            range: `${sheetName}!A1`,
-            valueInputOption: "USER_ENTERED",
-            requestBody: {
-              values: [headers],
-            },
-          });
-        }
+        // Add headers to the new sheet
+        await sheets.spreadsheets.values.update({
+          spreadsheetId,
+          range: `${sheetName}!A1`,
+          valueInputOption: "USER_ENTERED",
+          requestBody: {
+            values: [headers],
+          },
+        });
       }
 
-      // Convert data to rows
-      const rows = Array.isArray(data) 
-        ? data.map(item => Object.values(item))
-        : [Object.values(data)];
+      // Convert data to rows based on headers
+      const dataArray = Array.isArray(data) ? data : [data];
+      const rows = dataArray.map(item => {
+        return headers.map(header => {
+          const value = item[header];
+          return value !== undefined ? value : "";
+        });
+      });
 
       console.log(`Appending ${rows.length} rows to sheet: ${sheetName}`);
 
