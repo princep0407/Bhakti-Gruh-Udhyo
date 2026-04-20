@@ -25,6 +25,7 @@ interface LogEntry {
   consumerName?: string;
   source?: string;
   category?: string;
+  remarks?: string;
 }
 
 export function Logs() {
@@ -50,7 +51,8 @@ export function Logs() {
         unit: doc.data().unit,
         createdByName: doc.data().createdByName || 'Unknown',
         source: doc.data().source,
-        category: doc.data().category
+        category: doc.data().category,
+        remarks: doc.data().remarks
       }));
       setPurchases(pLogs);
     }, (error) => {
@@ -67,7 +69,8 @@ export function Logs() {
         unit: doc.data().unit,
         createdByName: doc.data().createdByName || 'Unknown',
         consumerName: doc.data().consumerName,
-        category: doc.data().category
+        category: doc.data().category,
+        remarks: doc.data().remarks
       }));
       setConsumptions(cLogs);
     }, (error) => {
@@ -257,6 +260,7 @@ export function Logs() {
                 <th className="px-6 py-4 text-left whitespace-nowrap">{t('type')}</th>
                 <th className="px-6 py-4 text-left whitespace-nowrap">{t('item_name')}</th>
                 <th className="px-6 py-4 text-right whitespace-nowrap">{t('qty')}</th>
+                <th className="px-6 py-4 text-left whitespace-nowrap">{t('remarks')}</th>
                 <th className="px-6 py-4 text-left whitespace-nowrap">{t('entry_by')}</th>
                 <th className="px-6 py-4 text-center whitespace-nowrap no-print">{t('actions')}</th>
               </tr>
@@ -289,6 +293,7 @@ export function Logs() {
                   <td className="px-6 py-4 text-right font-black whitespace-nowrap text-foreground">
                     {log.weight} <span className="text-[10px] font-medium text-muted-foreground">{log.unit}</span>
                   </td>
+                  <td className="px-6 py-4 text-muted-foreground text-xs">{log.remarks || '-'}</td>
                   <td className="px-6 py-4 text-muted-foreground">{log.createdByName}</td>
                   <td className="px-6 py-4 text-center no-print">
                     <div className="flex items-center justify-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">

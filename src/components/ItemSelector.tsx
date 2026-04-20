@@ -18,9 +18,10 @@ interface ItemSelectorProps {
   category?: string;
   placeholder?: string;
   className?: string;
+  availableItemNames?: string[];
 }
 
-export function ItemSelector({ onSelectItem, selectedItemNames, category, placeholder, className }: ItemSelectorProps) {
+export function ItemSelector({ onSelectItem, selectedItemNames, category, placeholder, className, availableItemNames }: ItemSelectorProps) {
   const { t } = useLanguage();
   const [items, setItems] = useState<Ingredient[]>([]);
   const [loading, setLoading] = useState(true);
@@ -62,9 +63,11 @@ export function ItemSelector({ onSelectItem, selectedItemNames, category, placeh
     return unsubscribe;
   }, [category, dynamicCategories, t]);
 
-  const filteredItems = items.filter(item => 
-    item.name.toLowerCase().includes(search.toLowerCase())
-  );
+  const filteredItems = items.filter(item => {
+    const matchesSearch = item.name.toLowerCase().includes(search.toLowerCase());
+    const isAvailable = availableItemNames ? availableItemNames.includes(item.name) : true;
+    return matchesSearch && isAvailable;
+  });
 
   const toggleCategory = (cat: string) => {
     setExpandedCategories(prev => ({ ...prev, [cat]: !prev[cat] }));

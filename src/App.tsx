@@ -9,6 +9,9 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { PurchaseForm } from './components/PurchaseForm';
 import { ConsumptionForm } from './components/ConsumptionForm';
+import { TransferForm } from './components/TransferForm';
+import { WastageForm } from './components/WastageForm';
+import { AnalyticsDashboard } from './components/AnalyticsDashboard';
 import { StockTable } from './components/StockTable';
 import { AdminDashboard } from './components/AdminDashboard';
 import { IngredientsManager } from './components/IngredientsManager';
@@ -17,7 +20,7 @@ import { Reports } from './components/Reports';
 import { Logs } from './components/Logs';
 import { Toaster } from '@/components/ui/sonner';
 import { toast } from 'sonner';
-import { LogIn, LogOut, Package, ShoppingCart, Utensils, LayoutDashboard, History, List, FileBarChart, FileText, Menu, X, ShieldAlert, Users } from 'lucide-react';
+import { LogIn, LogOut, Package, ShoppingCart, Utensils, LayoutDashboard, History, List, FileBarChart, FileText, Menu, X, ShieldAlert, Users, ArrowRightLeft, AlertTriangle, PieChart } from 'lucide-react';
 import { useLanguage } from './contexts/LanguageContext';
 
 export default function App() {
@@ -259,8 +262,11 @@ export default function App() {
     { id: 'users', icon: Users, label: t('users'), adminOnly: true },
     { id: 'purchase', icon: ShoppingCart, label: t('purchase') },
     { id: 'consumption', icon: Utensils, label: t('consumption') },
+    { id: 'transfer', icon: ArrowRightLeft, label: t('transfer') },
+    { id: 'wastage', icon: AlertTriangle, label: t('wastage') },
     { id: 'history', icon: History, label: t('history') },
     { id: 'logs', icon: FileText, label: t('logs') },
+    { id: 'analytics', icon: PieChart, label: t('analytics') },
     { id: 'reports', icon: FileBarChart, label: t('reports'), adminOnly: true },
     { id: 'ingredients', icon: List, label: t('items'), adminOnly: true },
   ];
@@ -355,6 +361,21 @@ export default function App() {
             <TabsContent value="consumption" className="m-0 h-full animate-in fade-in zoom-in-95 duration-500">
               <div className="max-w-4xl mx-auto">
                 <ConsumptionForm />
+              </div>
+            </TabsContent>
+            <TabsContent value="transfer" className="m-0 h-full animate-in fade-in zoom-in-95 duration-500">
+              <div className="max-w-4xl mx-auto">
+                <TransferForm userName={user?.displayName || user?.email?.split('@')[0] || ''} />
+              </div>
+            </TabsContent>
+            <TabsContent value="wastage" className="m-0 h-full animate-in fade-in zoom-in-95 duration-500">
+              <div className="max-w-4xl mx-auto">
+                <WastageForm userName={user?.displayName || user?.email?.split('@')[0] || ''} />
+              </div>
+            </TabsContent>
+            <TabsContent value="analytics" className="m-0 h-full animate-in fade-in zoom-in-95 duration-500">
+              <div className="max-w-6xl mx-auto">
+                <AnalyticsDashboard />
               </div>
             </TabsContent>
             <TabsContent value="history" className="m-0 h-full animate-in fade-in zoom-in-95 duration-500">

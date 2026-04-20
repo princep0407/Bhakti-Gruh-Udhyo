@@ -135,8 +135,8 @@ export function Reports() {
       if (!summary[item.itemName]) return;
       if (item.type === 'purchase') {
         summary[item.itemName].purchase += item.weight;
-        // Default purchases to Main Store if not specified
-        summary[item.itemName].locations['loc_main_store'] += item.weight;
+        const loc = item.storageLocation || 'loc_main_store';
+        summary[item.itemName].locations[loc] = (summary[item.itemName].locations[loc] || 0) + item.weight;
       } else {
         summary[item.itemName].consumption += item.weight;
         if (item.sourceLocation) {
@@ -257,6 +257,52 @@ export function Reports() {
     }
   };
 
+  const exportReorderToExcel = () => {
+    try {
+      const lowStockData = stockSummary.filter(s => s.isLow).map(item => ({
+        [t('item_name')]: item.name,
+        [t('category')]: item.category,
+        [t('stock')]: parseFloat(item.currentStock.toFixed(2)),
+        'Par Level': parseFloat(item.parLevel.toFixed(2)),
+        [t('unit')]: item.unit,
+        'Status': 'LOW'
+      }));
+      const ws = XLSX.utils.json_to_sheet(lowStockData);
+      const wb = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(wb, ws, "Reorder List");
+      XLSX.writeFile(wb, `Reorder_List_${new Date().toLocaleDateString()}.xlsx`);
+      toast.success('Excel downloaded');
+    } catch (error) {
+      toast.error(t('error_occurred'));
+    }
+  };
+
+  const exportReorderToPDF = () => {
+    try {
+      const doc = new jsPDF();
+      doc.text("Re-Order List (Low Stock)", 14, 15);
+      
+      const lowStockData = stockSummary.filter(s => s.isLow).map(item => [
+        item.name,
+        item.category,
+        item.currentStock.toFixed(2),
+        item.parLevel.toFixed(2),
+        item.unit
+      ]);
+
+      (doc as any).autoTable({
+        head: [['Item Name', 'Category', 'Current Stock', 'Par Level', 'Unit']],
+        body: lowStockData,
+        startY: 20,
+      });
+
+      doc.save(`Reorder_List_${new Date().toLocaleDateString()}.pdf`);
+      toast.success('PDF downloaded');
+    } catch (error) {
+      toast.error(t('error_occurred'));
+    }
+  };
+
   const handlePrint = () => {
     window.print();
   };
@@ -307,6 +353,10 @@ export function Reports() {
           <TabsTrigger value="stock" className="py-2.5 px-3 whitespace-nowrap text-xs md:text-sm">
             <Package className="h-4 w-4 mr-2" />
             {t('stock_report')}
+          </TabsTrigger>
+          <TabsTrigger value="reorder" className="py-2.5 px-3 whitespace-nowrap text-xs md:text-sm bg-destructive/10 text-destructive data-[state=active]:bg-destructive data-[state=active]:text-white">
+            <AlertTriangle className="h-4 w-4 mr-2" />
+            {t('reorder_list')}
           </TabsTrigger>
           <TabsTrigger value="usage" className="py-2.5 px-3 whitespace-nowrap text-xs md:text-sm">
             <TrendingUp className="h-4 w-4 mr-2" />
@@ -702,6 +752,63 @@ export function Reports() {
               </CardContent>
             </Card>
           </div>
+        </TabsContent>
+
+        {/* Re-order List Tab */}
+        <TabsContent value="reorder" className="mt-6 space-y-6">
+          <div className="flex flex-wrap gap-2 mb-4">
+            <Button onClick={exportReorderToExcel} variant="outline" className="gap-2 bg-[#f0fdf4] text-[#15803d] border-[#bbf7d0] hover:bg-[#dcfce7]">
+              <Download className="h-4 w-4" />
+              Excel Export
+            </Button>
+            <Button onClick={exportReorderToPDF} variant="outline" className="gap-2 bg-destructive/10 text-destructive border-destructive/20 hover:bg-destructive/20">
+              <FileText className="h-4 w-4" />
+              PDF Export
+            </Button>
+          </div>
+          <Card className="border-none neo-shadow bg-destructive/5 border border-destructive/10">
+            <CardHeader>
+              <CardTitle className="text-lg flex items-center gap-2 text-destructive">
+                <AlertTriangle className="h-5 w-5" />
+                {t('reorder_list')}
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="p-0">
+              <div className="overflow-x-auto scrollbar-hide">
+                <table className="w-full text-sm">
+                  <thead className="bg-destructive/10 text-destructive font-medium border-y border-destructive/20">
+                    <tr>
+                      <th className="px-4 py-3 text-left">{t('item_name')}</th>
+                      <th className="px-4 py-3 text-left">{t('category')}</th>
+                      <th className="px-4 py-3 text-right">{t('stock')}</th>
+                      <th className="px-4 py-3 text-right">Par Level</th>
+                      <th className="px-4 py-3 text-left">{t('unit')}</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-destructive/10">
+                    {stockSummary
+                      .filter(s => s.isLow)
+                      .map((s, i) => (
+                      <tr key={i} className="hover:bg-destructive/10 transition-colors">
+                        <td className="px-4 py-3 font-bold text-slate-800">{s.name}</td>
+                        <td className="px-4 py-3 text-slate-600">{s.category}</td>
+                        <td className="px-4 py-3 text-right font-black text-destructive">{s.currentStock.toFixed(2)}</td>
+                        <td className="px-4 py-3 text-right font-bold text-slate-500">{s.parLevel.toFixed(2)}</td>
+                        <td className="px-4 py-3 text-slate-500">{s.unit}</td>
+                      </tr>
+                    ))}
+                    {stockSummary.filter(s => s.isLow).length === 0 && (
+                      <tr>
+                        <td colSpan={5} className="px-4 py-8 text-center text-slate-500">
+                          {t('no_records') || 'No records found'}
+                        </td>
+                      </tr>
+                    )}
+                  </tbody>
+                </table>
+              </div>
+            </CardContent>
+          </Card>
         </TabsContent>
 
         {/* Consumption Analytics Tab */}

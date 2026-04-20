@@ -29,6 +29,7 @@ const purchaseSchema = z.object({
   storageLocation: z.enum(SOURCE_LOCATIONS as [string, ...string[]]),
   unit: z.string().min(1, 'unit_required'),
   expiryDate: z.string().optional(),
+  remarks: z.string().optional(),
 });
 
 type PurchaseFormValues = z.infer<typeof purchaseSchema>;
@@ -175,6 +176,7 @@ export function PurchaseForm() {
           createdAt: serverTimestamp(),
           createdBy: auth.currentUser!.uid,
           createdByName: userName || auth.currentUser!.email?.split('@')[0] || 'Unknown',
+          remarks: data.remarks || '',
         };
 
         if (data.expiryDate) {
@@ -307,6 +309,16 @@ export function PurchaseForm() {
                     searchPlaceholder={t('search')}
                   />
                 </div>
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="remarks" className="text-slate-600 font-medium">{t('remarks')}</Label>
+                <textarea 
+                  id="remarks" 
+                  placeholder={t('remarks')} 
+                  {...register('remarks')} 
+                  className="w-full min-h-[80px] p-3 rounded-xl bg-white/50 border border-slate-200 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all resize-y text-sm" 
+                />
               </div>
 
               <div className="space-y-4 pt-4 border-t border-slate-100">

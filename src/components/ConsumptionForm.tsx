@@ -27,6 +27,7 @@ const consumptionSchema = z.object({
   usageType: z.enum(USAGE_TYPES as [string, ...string[]]),
   sourceLocation: z.enum(SOURCE_LOCATIONS as [string, ...string[]]),
   unit: z.string().min(1, 'unit_required'),
+  remarks: z.string().optional(),
 });
 
 type ConsumptionFormValues = z.infer<typeof consumptionSchema>;
@@ -45,7 +46,7 @@ export function ConsumptionForm() {
   const [pendingItem, setPendingItem] = useState<{ id: string; name: string; category: string; weight?: string; unit?: string } | null>(null);
   const [isWeightDialogOpen, setIsWeightDialogOpen] = useState(false);
   const [units, setUnits] = useState<string[]>([]);
-  const [currentStock, setCurrentStock] = useState<Record<string, number>>({});
+  const [currentStock, setCurrentStock] = useState<Record<string, Record<string, number>>>({});
   const [userName, setUserName] = useState<string>('');
 
   useEffect(() => {
@@ -90,7 +91,7 @@ export function ConsumptionForm() {
   useEffect(() => {
     const fetchStock = async () => {
       try {
-        const stockMap: Record<string, number> = {};
+        const stockMap: Record<string, Record<string, number>> = {};
         
         // This is a simplified stock calculation. 
         // In a real app, you'd probably have a 'stock' collection or a more efficient way.
@@ -99,14 +100,16 @@ export function ConsumptionForm() {
 
         pSnap.docs.forEach(doc => {
           const data = doc.data();
-          const key = `${data.itemName}_${data.unit}`;
-          stockMap[key] = (stockMap[key] || 0) + (data.weight || 0);
+          const loc = data.storageLocation || 'loc_main_store';
+          if (!stockMap[loc]) stockMap[loc] = {};
+          stockMap[loc][data.itemName] = (stockMap[loc][data.itemName] || 0) + (data.weight || 0);
         });
 
         cSnap.docs.forEach(doc => {
           const data = doc.data();
-          const key = `${data.itemName}_${data.unit}`;
-          stockMap[key] = (stockMap[key] || 0) - (data.weight || 0);
+          const loc = data.sourceLocation || 'loc_main_store';
+          if (!stockMap[loc]) stockMap[loc] = {};
+          stockMap[loc][data.itemName] = (stockMap[loc][data.itemName] || 0) - (data.weight || 0);
         });
 
         setCurrentStock(stockMap);
@@ -131,8 +134,8 @@ export function ConsumptionForm() {
   const handleWeightConfirm = (weight: string) => {
     if (pendingItem) {
       const weightVal = parseFloat(weight);
-      const stockKey = `${pendingItem.name}_${pendingItem.unit || selectedUnit}`;
-      const availableStock = currentStock[stockKey] || 0;
+      const selectedSourceLocation = watch('sourceLocation');
+      const availableStock = currentStock[selectedSourceLocation]?.[pendingItem.name] || 0;
 
       if (weightVal > availableStock) {
         toast.error(`${t('insufficient_stock')} ${t('available_stock')}: ${availableStock.toFixed(2)} ${pendingItem.unit || selectedUnit}`);
@@ -187,6 +190,7 @@ export function ConsumptionForm() {
           createdAt: serverTimestamp(),
           createdBy: auth.currentUser!.uid,
           createdByName: userName || auth.currentUser!.email?.split('@')[0] || 'Unknown',
+          remarks: data.remarks || '',
         });
       });
 
@@ -307,6 +311,16 @@ export function ConsumptionForm() {
                 </div>
               </div>
 
+              <div className="space-y-2">
+                <Label htmlFor="remarks" className="text-slate-600 font-medium">{t('remarks')}</Label>
+                <textarea 
+                  id="remarks" 
+                  placeholder={t('remarks')} 
+                  {...register('remarks')} 
+                  className="w-full min-h-[80px] p-3 rounded-xl bg-white/50 border border-slate-200 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all resize-y text-sm" 
+                />
+              </div>
+
               <div className="space-y-4 pt-4 border-t border-slate-100">
                 <div className="space-y-3">
                   <Label className="text-slate-600 font-medium">{t('select_category')}</Label>
@@ -324,6 +338,7 @@ export function ConsumptionForm() {
                     category={selectedCategory}
                     placeholder={t('search')}
                     className="h-12 bg-white/50 border-slate-200 focus:ring-primary/20 transition-all"
+                    availableItemNames={Object.keys(currentStock[watch('sourceLocation')] || {}).filter(name => currentStock[watch('sourceLocation')][name] > 0)}
                   />
                 </div>
               </div>
@@ -345,7 +360,7 @@ export function ConsumptionForm() {
                             <div className="flex items-center gap-2">
                               <span className="text-[10px] text-slate-500 uppercase tracking-wider">{item.category}</span>
                               <span className="text-[10px] bg-primary/10 text-primary px-1.5 py-0.5 rounded-full font-bold">
-                                {t('stock')}: {currentStock[`${item.name}_${item.unit}`] || 0} {item.unit}
+                                {t('stock')}: {currentStock[watch('sourceLocation')]?.[item.name] || 0} {item.unit}
                               </span>
                             </div>
                           </div>
@@ -386,7 +401,7 @@ export function ConsumptionForm() {
         onConfirm={handleWeightConfirm}
         itemName={pendingItem?.name || ''}
         initialWeight={pendingItem?.weight || ''}
-        stock={pendingItem ? currentStock[`${pendingItem.name}_${pendingItem.unit || selectedUnit}`] : undefined}
+        stock={pendingItem ? currentStock[watch('sourceLocation')]?.[pendingItem.name] : undefined}
         unit={pendingItem?.unit || selectedUnit}
       />
     </div>
